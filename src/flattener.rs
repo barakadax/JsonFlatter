@@ -50,7 +50,6 @@ pub fn flatten_json(ctx: &mut FlattenContext) {
 //////////////////
 /// Unit Tests ///
 //////////////////
-
 #[cfg(test)]
 mod tests {
     use super::*;
