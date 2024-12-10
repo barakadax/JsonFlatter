@@ -5,7 +5,8 @@ use serde_json::{Value, Map};
 use crate::flatten_context::FlattenContext;
 use crate::flattener::flatten_json;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let json_str = r#"
     {
         "name": "Alice",

@@ -7,3 +7,4 @@ authors = ["Barak Taya, barakadax@gmail.com"]
 [dependencies]
 serde_json = "1.0.133"
 serde = { version = "1.0.215", features = ["derive"] }
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"]}
