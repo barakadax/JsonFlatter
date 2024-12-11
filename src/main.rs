@@ -1,12 +1,15 @@
 pub mod flatten_context;
 pub mod flattener;
 
+use std::time::Instant;
 use serde_json::{Value, Map};
 use crate::flatten_context::FlattenContext;
 use crate::flattener::flatten_json;
 
 #[tokio::main]
 async fn main() {
+    let start = Instant::now();
+
     let json_str = r#"
     {
         "name": "Alice",
@@ -45,4 +48,7 @@ async fn main() {
     //println!("Prefix: {}", ctx.prefix);
     //println!("JSON: {}", serde_json::to_string_pretty(ctx.json).unwrap());
     println!("Flat Map: {}", serde_json::to_string_pretty(ctx.flat_map).unwrap());
+
+    let duration = start.elapsed();
+    println!("Script runtime: {:?}", duration); // µs == microseconds
 }

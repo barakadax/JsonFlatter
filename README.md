@@ -10,3 +10,8 @@ cargo run
 ```shell
 cargo test
 ```
+
+## Validate if code is clean
+```shell
+cargo clippy --all-features
+```
