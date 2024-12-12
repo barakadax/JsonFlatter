@@ -1,0 +1,17 @@
+version: '1'
+
+services:
+  rust-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rust_server
+    container_name: rust_server
+    tty: true
+    command: cargo run
+    ports:
+      - "1234:1234"
+
+networks:
+  app-network:
+    driver: bridge

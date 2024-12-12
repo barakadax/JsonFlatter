@@ -3,46 +3,54 @@ use crate::flatten_context::FlattenContext;
 
 pub fn flatten_json(ctx: &mut FlattenContext) {
     match ctx.json {
-        Value::Object(map) => {
-            if map.is_empty() {
-                ctx.flat_map.insert(format!("{}{}", ctx.prefix, ctx.object_separator), Value::Null);
-            } else {
-                for (key, value) in map {
-                    let new_key = if ctx.prefix.is_empty() {
-                        key.clone()
-                    } else {
-                        format!("{}{}{}", ctx.prefix, ctx.object_separator, key)
-                    };
-                    let mut new_ctx = FlattenContext {
-                        array_separator: ctx.array_separator.to_string(),
-                        object_separator: ctx.object_separator.to_string(),
-                        json: value,
-                        prefix: new_key,
-                        flat_map: ctx.flat_map,
-                    };
-                    flatten_json(&mut new_ctx);
-                }
-            }
-        }
-        Value::Array(arr) => {
-            if arr.is_empty() {
-                ctx.flat_map.insert(format!("{}{}", ctx.prefix, ctx.array_separator), Value::Null);
-            } else {
-                for (index, value) in arr.iter().enumerate() {
-                    let new_key = format!("{}{}{}", ctx.prefix, ctx.array_separator, index);
-                    let mut new_ctx = FlattenContext {
-                        array_separator: ctx.array_separator.to_string(),
-                        object_separator: ctx.object_separator.to_string(),
-                        json: value,
-                        prefix: new_key,
-                        flat_map: ctx.flat_map,
-                    };
-                    flatten_json(&mut new_ctx);
-                }
-            }
-        }
+        Value::Object(_) => flatten_object(ctx),
+        Value::Array(_) => flatten_array(ctx),
         _ => {
             ctx.flat_map.insert(ctx.prefix.clone(), ctx.json.clone());
+        }
+    }
+}
+
+fn flatten_object(ctx: &mut FlattenContext) {
+    if let Value::Object(map) = ctx.json {
+        if map.is_empty() {
+            ctx.flat_map.insert(format!("{}{}", ctx.prefix, ctx.object_separator), Value::Null);
+        } else {
+            for (key, value) in map {
+                let new_key = if ctx.prefix.is_empty() {
+                    key.clone()
+                } else {
+                    format!("{}{}{}", ctx.prefix, ctx.object_separator, key)
+                };
+                let mut new_ctx = FlattenContext {
+                    array_separator: ctx.array_separator.to_string(),
+                    object_separator: ctx.object_separator.to_string(),
+                    json: value,
+                    prefix: new_key,
+                    flat_map: ctx.flat_map,
+                };
+                flatten_json(&mut new_ctx);
+            }
+        }
+    }
+}
+
+fn flatten_array(ctx: &mut FlattenContext) {
+    if let Value::Array(arr) = ctx.json {
+        if arr.is_empty() {
+            ctx.flat_map.insert(format!("{}{}", ctx.prefix, ctx.array_separator), Value::Null);
+        } else {
+            for (index, value) in arr.iter().enumerate() {
+                let new_key = format!("{}{}{}", ctx.prefix, ctx.array_separator, index);
+                let mut new_ctx = FlattenContext {
+                    array_separator: ctx.array_separator.to_string(),
+                    object_separator: ctx.object_separator.to_string(),
+                    json: value,
+                    prefix: new_key,
+                    flat_map: ctx.flat_map,
+                };
+                flatten_json(&mut new_ctx);
+            }
         }
     }
 }
@@ -96,7 +104,7 @@ mod tests {
         let mut flat_map = Map::new();
         let json = json!({"key": "value"});
         let mut ctx = FlattenContext {
-            array_separator: ".".to_string(),
+            array_separator: "_".to_string(),
             object_separator: ".".to_string(),
             json: &json,
             prefix: "".to_string(),
@@ -118,7 +126,7 @@ mod tests {
             }
         });
         let mut ctx = FlattenContext {
-            array_separator: ".".to_string(),
+            array_separator: "_".to_string(),
             object_separator: ".".to_string(),
             json: &json,
             prefix: "".to_string(),
@@ -136,7 +144,7 @@ mod tests {
         let mut flat_map = Map::new();
         let json = json!([1, 2, 3]);
         let mut ctx = FlattenContext {
-            array_separator: ".".to_string(),
+            array_separator: "_".to_string(),
             object_separator: ".".to_string(),
             json: &json,
             prefix: "".to_string(),
@@ -146,9 +154,9 @@ mod tests {
         flatten_json(&mut ctx);
 
         assert_eq!(flat_map.len(), 3);
-        assert_eq!(flat_map.get(".0").unwrap(), &json!(1));
-        assert_eq!(flat_map.get(".1").unwrap(), &json!(2));
-        assert_eq!(flat_map.get(".2").unwrap(), &json!(3));
+        assert_eq!(flat_map.get("_0").unwrap(), &json!(1));
+        assert_eq!(flat_map.get("_1").unwrap(), &json!(2));
+        assert_eq!(flat_map.get("_2").unwrap(), &json!(3));
     }
 
     #[test]
@@ -185,7 +193,7 @@ mod tests {
             "key": null
         });
         let mut ctx = FlattenContext {
-            array_separator: ".".to_string(),
+            array_separator: "_".to_string(),
             object_separator: ".".to_string(),
             json: &json,
             prefix: "".to_string(),
@@ -203,7 +211,7 @@ mod tests {
         let mut flat_map = Map::new();
         let json = json!([null, 2, null]);
         let mut ctx = FlattenContext {
-            array_separator: ".".to_string(),
+            array_separator: "_".to_string(),
             object_separator: ".".to_string(),
             json: &json,
             prefix: "".to_string(),
@@ -213,9 +221,9 @@ mod tests {
         flatten_json(&mut ctx);
 
         assert_eq!(flat_map.len(), 3);
-        assert_eq!(flat_map.get(".0").unwrap(), &Value::Null);
-        assert_eq!(flat_map.get(".1").unwrap(), &json!(2));
-        assert_eq!(flat_map.get(".2").unwrap(), &Value::Null);
+        assert_eq!(flat_map.get("_0").unwrap(), &Value::Null);
+        assert_eq!(flat_map.get("_1").unwrap(), &json!(2));
+        assert_eq!(flat_map.get("_2").unwrap(), &Value::Null);
     }
 
     #[test]
