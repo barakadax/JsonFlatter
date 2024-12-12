@@ -15,3 +15,8 @@ cargo test
 ```shell
 cargo clippy --all-features
 ```
+
+## How to run in docker
+```shell
+docker-compose up --build
+```

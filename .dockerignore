@@ -1,0 +1,10 @@
+.git/
+.github/
+.gitignore
+.dockerignore
+Cargo.lock
+docker-compose.yaml
+Dockerfile
+LICENSE.txt
+README.md
+target/
