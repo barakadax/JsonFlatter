@@ -11,7 +11,7 @@ cargo run
 cargo test
 ```
 
-## Validate if code is clean
+## How to run lint
 ```shell
 cargo clippy --all-features
 ```
