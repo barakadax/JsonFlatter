@@ -8,3 +8,4 @@ Dockerfile
 LICENSE.txt
 README.md
 target/
+.env

@@ -1,6 +1,8 @@
 pub mod flatten_context;
 pub mod flattener;
 
+use dotenvy::dotenv;
+//use std::env;
 use std::time::Instant;
 use serde_json::{Value, Map};
 use crate::flatten_context::FlattenContext;
@@ -9,6 +11,8 @@ use crate::flattener::flatten_json;
 #[tokio::main]
 async fn main() {
     let start = Instant::now();
+
+    dotenv().ok();
 
     let json_str = r#"
     {
